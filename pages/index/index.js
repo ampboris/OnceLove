@@ -6,7 +6,8 @@ var appid = app.globalData.appid;
 
 Page({
   data: {
-    userInfo: {},   
+    userInfo: {}, 
+    isPlayingMusic: true  
   },  
   onLoad: function () {
     var that = this
@@ -28,19 +29,28 @@ Page({
       },
       success: function(res) {
         // console.log(res.data)
+        wx.playBackgroundAudio({
+          dataUrl: res.data.music_url,
+          title: '',
+          coverImgUrl: ''
+        })
+
         that.setData({ 
           mainInfo: res.data.mainInfo,      
-          slideList: res.data.slideList
+          slideList: res.data.slideList,      
+          music_url: res.data.music_url
         });
       }
     })
+    
+    
 
     wx.setClipboardData({
       data: '7mdRbr48sM',
       success: function(res) {
         wx.getClipboardData({
           success: function(res) {
-            console.log(res.data) // data
+            // console.log(res.data) // data
           }
         })
       }
@@ -76,6 +86,23 @@ Page({
           title: '分享取消',
         })
       }
+    }
+  },
+  play: function (event) {
+    if (this.data.isPlayingMusic) {
+      wx.pauseBackgroundAudio();
+      this.setData({
+        isPlayingMusic: false
+      })
+    } else {
+      wx.playBackgroundAudio({
+        dataUrl: this.data.music_url,
+        title: '',
+        coverImgUrl: ''
+      })
+      this.setData({
+        isPlayingMusic: true
+      })
     }
   },
 })
